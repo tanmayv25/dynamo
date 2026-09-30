@@ -809,13 +809,9 @@ fn register_model<'p>(
         // HuggingFace downloads and register directly. These model types
         // handle model loading internally; no tokenizer extraction is
         // needed and the source path is not required to be a HF repo.
-        //
-        // Classify and Pooling models take the same fast path when a
-        // `tensor_model_config` is attached: they are being served by a
-        // tensor engine (e.g. Triton) that owns tokenization and label
-        // lookup, so the frontend has no HuggingFace metadata to fetch.
-        // vLLM's pooling workers do not pass `tensor_model_config` and
-        // stay on the full HF-resolve path below.
+        // Classify / Pooling models with `tensor_model_config` attached
+        // take the same path; see the `is_classify_tensor` /
+        // `is_pooling_tensor` definitions above for why.
         if is_tensor_based
             || is_images
             || is_videos
